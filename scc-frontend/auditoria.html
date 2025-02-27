@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC - Auditoria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="flex h-screen bg-gray-100">
+
+    <div class="w-64 bg-white shadow-md p-4">
+        <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
+        <ul>
+            <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
+            <li class="mb-2"><a href="competicoes.html" class="block p-2 hover:bg-gray-200 rounded">Competições</a></li>
+            <li class="mb-2"><a href="atletas.html" class="block p-2 hover:bg-gray-200 rounded">Atletas</a></li>
+            <li class="mb-2"><a href="rankings.html" class="block p-2 hover:bg-gray-200 rounded">Rankings</a></li>
+            <li class="mb-2"><a href="antidoping.html" class="block p-2 hover:bg-gray-200 rounded">Antidoping</a></li>
+            <li class="mb-2"><a href="fases.html" class="block p-2 hover:bg-gray-200 rounded">Fases</a></li>
+            <li class="mb-2"><a href="auditoria.html" class="block p-2 bg-blue-500 text-white rounded">Auditoria</a></li>
+            <li class="mt-4"><button onclick="logout()" class="w-full p-2 bg-red-500 text-white rounded">Sair</button></li>
+        </ul>
+    </div>
+
+    <div class="flex-1 p-6">
+        <h1 class="text-2xl font-semibold">Logs de Auditoria</h1>
+
+        <div class="mt-4 mb-4">
+            <input id="descricao" type="text" placeholder="Descrição" class="p-2 border rounded mr-2">
+            <input id="dataAuditoria" type="date" class="p-2 border rounded mr-2">
+            <input id="solicitante" type="text" placeholder="Solicitante" class="p-2 border rounded mr-2">
+            <button onclick="adicionarAuditoria()" class="bg-green-500 text-white py-2 px-4 rounded">Adicionar Auditoria</button>
+        </div>
+
+        <table id="tabelaAuditoria" class="mt-4 w-full bg-white shadow-md rounded">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2">Data</th>
+                    <th class="p-2">Solicitante</th>
+                    <th class="p-2">Descrição</th>
+                    <th class="p-2">Ação</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        let auditoriaLogs = JSON.parse(localStorage.getItem("auditoriaLogs")) || [];
+
+        function atualizarTabela() {
+            const tabela = $("#tabelaAuditoria").DataTable();
+            tabela.clear();
+            auditoriaLogs.forEach((log, index) => {
+                tabela.row.add([
+                    log.data,
+                    log.solicitante,
+                    log.descricao,
+                    `<button onclick="removerAuditoria(${index})" class="bg-red-500 text-white p-1 rounded">Excluir</button>`
+                ]);
+            });
+            tabela.draw();
+        }
+
+        function adicionarAuditoria() {
+            const descricao = document.getElementById("descricao").value;
+            const data = document.getElementById("dataAuditoria").value;
+            const solicitante = document.getElementById("solicitante").value;
+
+            if (!descricao || !data || !solicitante) {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            const novoLog = { descricao, data, solicitante };
+            auditoriaLogs.push(novoLog);
+            localStorage.setItem("auditoriaLogs", JSON.stringify(auditoriaLogs));
+            atualizarTabela();
+        }
+
+        function removerAuditoria(index) {
+            auditoriaLogs.splice(index, 1);
+            localStorage.setItem("auditoriaLogs", JSON.stringify(auditoriaLogs));
+            atualizarTabela();
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "index.html";
+        }
+
+        $(document).ready(() => {
+            $("#tabelaAuditoria").DataTable();
+            atualizarTabela();
+        });
+    </script>
+</body>
+</html>

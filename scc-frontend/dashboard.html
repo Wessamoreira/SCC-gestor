@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC - Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="flex h-screen bg-gray-100">
+
+    <!-- Barra lateral -->
+    <div class="w-64 bg-white shadow-md p-4">
+        <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
+        <ul>
+            <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
+            <li class="mb-2"><a href="competicoes.html" class="block p-2 hover:bg-gray-200 rounded">Competições</a></li>
+            <li class="mb-2"><a href="atletas.html" class="block p-2 hover:bg-gray-200 rounded">Atletas</a></li>
+            <li class="mb-2"><a href="rankings.html" class="block p-2 bg-blue-500 text-white rounded">Rankings</a></li>
+            <li class="mb-2"><a href="antidoping.html" class="block p-2 hover:bg-gray-200 rounded">Antidoping</a></li>
+            <li class="mb-2"><a href="fases.html" class="block p-2 hover:bg-gray-200 rounded">Fases</a></li>
+            <li class="mb-2"><a href="auditoria.html" class="block p-2 hover:bg-gray-200 rounded">Auditoria</a></li>
+            <li class="mt-4"><button onclick="logout()" class="w-full p-2 bg-red-500 text-white rounded">Sair</button></li>
+        </ul>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="flex-1 p-6">
+        <h1 class="text-2xl font-semibold">Dashboard</h1>
+        <div class="grid grid-cols-3 gap-4 mt-6">
+            <div class="bg-white p-4 shadow-md rounded">
+                <h3 class="text-lg font-semibold">Total de Competições</h3>
+                <p id="totalCompeticoes" class="text-2xl font-bold text-blue-500">0</p>
+            </div>
+            <div class="bg-white p-4 shadow-md rounded">
+                <h3 class="text-lg font-semibold">Total de Atletas</h3>
+                <p id="totalAtletas" class="text-2xl font-bold text-green-500">0</p>
+            </div>
+            <div class="bg-white p-4 shadow-md rounded">
+                <h3 class="text-lg font-semibold">Total de Testes Antidoping</h3>
+                <p id="totalAntidoping" class="text-2xl font-bold text-red-500">0</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function carregarDashboard() {
+            const competicoes = JSON.parse(localStorage.getItem("competicoes")) || [];
+            const atletas = JSON.parse(localStorage.getItem("atletas")) || [];
+            const antidoping = JSON.parse(localStorage.getItem("antidoping")) || [];
+
+            document.getElementById("totalCompeticoes").innerText = competicoes.length;
+            document.getElementById("totalAtletas").innerText = atletas.length;
+            document.getElementById("totalAntidoping").innerText = antidoping.length;
+        }
+
+        function logout() {
+            window.location.href = "index.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", carregarDashboard);
+    </script>
+
+</body>
+</html>

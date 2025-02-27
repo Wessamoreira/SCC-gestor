@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC - Fases</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="flex h-screen bg-gray-100">
+
+    <div class="w-64 bg-white shadow-md p-4">
+        <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
+        <ul>
+            <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
+            <li class="mb-2"><a href="competicoes.html" class="block p-2 hover:bg-gray-200 rounded">Competições</a></li>
+            <li class="mb-2"><a href="atletas.html" class="block p-2 hover:bg-gray-200 rounded">Atletas</a></li>
+            <li class="mb-2"><a href="rankings.html" class="block p-2 hover:bg-gray-200 rounded">Rankings</a></li>
+            <li class="mb-2"><a href="antidoping.html" class="block p-2 hover:bg-gray-200 rounded">Antidoping</a></li>
+            <li class="mb-2"><a href="fases.html" class="block p-2 bg-blue-500 text-white rounded">Fases</a></li>
+            <li class="mb-2"><a href="auditoria.html" class="block p-2 hover:bg-gray-200 rounded">Auditoria</a></li>
+            <li class="mt-4"><button onclick="logout()" class="w-full p-2 bg-red-500 text-white rounded">Sair</button></li>
+        </ul>
+    </div>
+
+    <div class="flex-1 p-6">
+        <h1 class="text-2xl font-semibold">Gerenciamento de Fases</h1>
+
+        <button onclick="openModal()" class="mt-4 bg-green-500 text-white py-2 px-4 rounded">Adicionar Fase</button>
+
+        <table id="tabelaFases" class="mt-4 w-full bg-white shadow-md rounded">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2">Nome da Fase</th>
+                    <th class="p-2">Descrição</th>
+                    <th class="p-2">Modalidade</th>
+                    <th class="p-2">Data de Criação</th>
+                    <th class="p-2">Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            <h2 class="text-xl font-semibold mb-4">Nova Fase</h2>
+            <input id="nomeFase" type="text" placeholder="Nome da Fase" class="w-full p-2 border rounded mb-2">
+            <input id="descricaoFase" type="text" placeholder="Descrição" class="w-full p-2 border rounded mb-2">
+            <input id="modalidadeFase" type="text" placeholder="Modalidade" class="w-full p-2 border rounded mb-2">
+            <input id="dataCriacao" type="date" class="w-full p-2 border rounded mb-4">
+            <button onclick="salvarFase()" class="bg-blue-500 text-white py-2 px-4 rounded">Salvar</button>
+            <button onclick="closeModal()" class="bg-gray-500 text-white py-2 px-4 rounded ml-2">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        let fases = JSON.parse(localStorage.getItem("fases")) || [];
+
+        function atualizarTabela() {
+            const tabela = $("#tabelaFases").DataTable();
+            tabela.clear();
+            fases.forEach((fase, index) => {
+                tabela.row.add([
+                    fase.nomeFase,
+                    fase.descricaoFase,
+                    fase.modalidadeFase,
+                    fase.dataCriacao,
+                    `<button onclick="deletarFase(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2">Excluir</button>`
+                ]);
+            });
+            tabela.draw();
+        }
+
+        function openModal() {
+            document.getElementById("modal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("modal").classList.add("hidden");
+            document.getElementById("nomeFase").value = "";
+            document.getElementById("descricaoFase").value = "";
+            document.getElementById("modalidadeFase").value = "";
+            document.getElementById("dataCriacao").value = "";
+        }
+
+        function salvarFase() {
+            const nomeFase = document.getElementById("nomeFase").value;
+            const descricaoFase = document.getElementById("descricaoFase").value;
+            const modalidadeFase = document.getElementById("modalidadeFase").value;
+            const dataCriacao = document.getElementById("dataCriacao").value;
+
+            fases.push({ nomeFase, descricaoFase, modalidadeFase, dataCriacao });
+            localStorage.setItem("fases", JSON.stringify(fases));
+            atualizarTabela();
+            closeModal();
+        }
+
+        function deletarFase(index) {
+            if (confirm("Deseja excluir esta fase?")) {
+                fases.splice(index, 1);
+                localStorage.setItem("fases", JSON.stringify(fases));
+                atualizarTabela();
+            }
+        }
+
+        $(document).ready(() => {
+            $("#tabelaFases").DataTable();
+            atualizarTabela();
+        });
+    </script>
+</body>
+</html>

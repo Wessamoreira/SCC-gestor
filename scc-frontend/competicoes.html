@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC - Competições</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="flex h-screen bg-gray-100">
+
+    
+    <div class="w-64 bg-white shadow-md p-4">
+        <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
+        <ul>
+            <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
+            <li class="mb-2"><a href="competicoes.html" class="block p-2 bg-blue-500 text-white rounded">Competições</a></li>
+            <li class="mb-2"><a href="atletas.html" class="block p-2 hover:bg-gray-200 rounded">Atletas</a></li>
+            <li class="mb-2"><a href="rankings.html" class="block p-2 hover:bg-gray-200 rounded">Rankings</a></li>
+            <li class="mb-2"><a href="antidoping.html" class="block p-2 hover:bg-gray-200 rounded">Antidoping</a></li>
+            <li class="mb-2"><a href="fases.html" class="block p-2 hover:bg-gray-200 rounded">Fases</a></li>
+            <li class="mb-2"><a href="auditoria.html" class="block p-2 hover:bg-gray-200 rounded">Auditoria</a></li>
+            <li class="mt-4"><button onclick="logout()" class="w-full p-2 bg-red-500 text-white rounded">Sair</button></li>
+        </ul>
+    </div>
+
+
+    <div class="flex-1 p-6">
+        <h1 class="text-2xl font-semibold">Gerenciamento de Competições</h1>
+        <button onclick="openModal()" class="mt-4 bg-green-500 text-white py-2 px-4 rounded">Adicionar Competição</button>
+        <table id="tabelaCompeticoes" class="mt-4 w-full bg-white shadow-md rounded">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2">Nome</th>
+                    <th class="p-2">Data</th>
+                    <th class="p-2">Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            <h2 class="text-xl font-semibold mb-4">Nova Competição</h2>
+            <input id="nomeCompeticao" type="text" placeholder="Nome" class="w-full p-2 border rounded mb-2">
+            <input id="dataCompeticao" type="date" class="w-full p-2 border rounded mb-2">
+            <textarea id="regrasCompeticao" placeholder="Regras" class="w-full p-2 border rounded mb-2"></textarea>
+            <textarea id="descricaoCompeticao" placeholder="Descrição" class="w-full p-2 border rounded mb-4"></textarea>
+            <button onclick="salvarCompeticao()" class="bg-blue-500 text-white py-2 px-4 rounded">Salvar</button>
+            <button onclick="closeModal()" class="bg-gray-500 text-white py-2 px-4 rounded ml-2">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        let competicoes = JSON.parse(localStorage.getItem("competicoes")) || [];
+
+        function atualizarTabela() {
+            const tabela = $("#tabelaCompeticoes").DataTable();
+            tabela.clear();
+            competicoes.forEach((competicao, index) => {
+                tabela.row.add([
+                    competicao.nome,
+                    competicao.data,
+                    `<button onclick="editarCompeticao(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded">Editar</button>
+                     <button onclick="deletarCompeticao(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2">Excluir</button>`
+                ]);
+            });
+            tabela.draw();
+        }
+
+        function openModal(index = null) {
+            document.getElementById("modal").classList.remove("hidden");
+            if (index !== null) {
+                document.getElementById("nomeCompeticao").value = competicoes[index].nome;
+                document.getElementById("dataCompeticao").value = competicoes[index].data;
+                document.getElementById("regrasCompeticao").value = competicoes[index].regras;
+                document.getElementById("descricaoCompeticao").value = competicoes[index].descricao;
+                document.getElementById("modal").dataset.index = index;
+            } else {
+                document.getElementById("modal").dataset.index = "";
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("modal").classList.add("hidden");
+            document.getElementById("nomeCompeticao").value = "";
+            document.getElementById("dataCompeticao").value = "";
+            document.getElementById("regrasCompeticao").value = "";
+            document.getElementById("descricaoCompeticao").value = "";
+        }
+
+        function salvarCompeticao() {
+            const nome = document.getElementById("nomeCompeticao").value;
+            const data = document.getElementById("dataCompeticao").value;
+            const regras = document.getElementById("regrasCompeticao").value;
+            const descricao = document.getElementById("descricaoCompeticao").value;
+            const index = document.getElementById("modal").dataset.index;
+            
+            if (index !== "") {
+                competicoes[index] = { nome, data, regras, descricao };
+            } else {
+                competicoes.push({ nome, data, regras, descricao });
+            }
+            localStorage.setItem("competicoes", JSON.stringify(competicoes));
+            atualizarTabela();
+            closeModal();
+        }
+
+        function deletarCompeticao(index) {
+            if (confirm("Deseja excluir esta competição?")) {
+                competicoes.splice(index, 1);
+                localStorage.setItem("competicoes", JSON.stringify(competicoes));
+                atualizarTabela();
+            }
+        }
+
+        $(document).ready(() => {
+            $("#tabelaCompeticoes").DataTable();
+            atualizarTabela();
+        });
+    </script>
+</body>
+</html>

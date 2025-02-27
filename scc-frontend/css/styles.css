@@ -1,0 +1,170 @@
+/* Definindo algumas variáveis para cores */
+:root {
+    --primary-color: #1d4ed8; 
+    --secondary-color: #dbeafe; 
+    --background-color: #f3f4f6; 
+    --text-color: #1f2937; 
+    --hover-color: #3b82f6; 
+    --border-color: #e5e7eb; 
+}
+
+/* Estilo global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+h1, h2 {
+    font-weight: 600;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+/* Layout da Sidebar */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: white;
+    box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    padding: 12px;
+    display: block;
+    border-radius: 5px;
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+    background-color: var(--hover-color);
+    color: white;
+}
+
+/* Layout do Conteúdo Principal */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+}
+
+/* Títulos */
+.page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Estilos do Formulário */
+input[type="date"],
+button {
+    padding: 8px 12px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    font-size: 1rem;
+}
+
+input[type="date"]:focus,
+button:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--hover-color);
+}
+
+/* Estilos para a Tabela */
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--secondary-color);
+}
+
+tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+/* Estilos do Rodapé */
+footer {
+    background-color: #fff;
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 30px;
+    font-size: 0.875rem;
+    color: var(--text-color);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .main-content {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+}

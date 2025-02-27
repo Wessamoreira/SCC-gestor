@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC - Antidoping</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="flex h-screen bg-gray-100">
+
+    <div class="w-64 bg-white shadow-md p-4">
+        <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
+        <ul>
+            <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
+            <li class="mb-2"><a href="competicoes.html" class="block p-2 hover:bg-gray-200 rounded">Competições</a></li>
+            <li class="mb-2"><a href="atletas.html" class="block p-2 hover:bg-gray-200 rounded">Atletas</a></li>
+            <li class="mb-2"><a href="rankings.html" class="block p-2 hover:bg-gray-200 rounded">Rankings</a></li>
+            <li class="mb-2"><a href="antidoping.html" class="block p-2 bg-blue-500 text-white rounded">Antidoping</a></li>
+            <li class="mb-2"><a href="fases.html" class="block p-2 hover:bg-gray-200 rounded">Fases</a></li>
+            <li class="mb-2"><a href="auditoria.html" class="block p-2 hover:bg-gray-200 rounded">Auditoria</a></li>
+            <li class="mt-4"><button onclick="logout()" class="w-full p-2 bg-red-500 text-white rounded">Sair</button></li>
+        </ul>
+    </div>
+
+    <div class="flex-1 p-6">
+        <h1 class="text-2xl font-semibold">Controle de Testes Antidoping</h1>
+
+        <button onclick="openModal()" class="mt-4 bg-green-500 text-white py-2 px-4 rounded">Adicionar Teste Antidoping</button>
+
+        <table id="tabelaAntidoping" class="mt-4 w-full bg-white shadow-md rounded">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2">Atleta</th>
+                    <th class="p-2">Data do Teste</th>
+                    <th class="p-2">Resultado</th>
+                    <th class="p-2">Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            <h2 class="text-xl font-semibold mb-4">Novo Teste Antidoping</h2>
+            <input id="atletaNome" type="text" placeholder="Nome do Atleta" class="w-full p-2 border rounded mb-2">
+            <input id="dataTeste" type="date" class="w-full p-2 border rounded mb-2">
+            <select id="resultado" class="w-full p-2 border rounded mb-4">
+                <option value="">Selecione Resultado</option>
+                <option value="Negativo">Negativo</option>
+                <option value="Positivo">Positivo</option>
+            </select>
+            <button onclick="salvarAntidoping()" class="bg-blue-500 text-white py-2 px-4 rounded">Salvar</button>
+            <button onclick="closeModal()" class="bg-gray-500 text-white py-2 px-4 rounded ml-2">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        let tabela;
+        let antidopings = [];
+
+        // Carregar dados do localStorage
+        function carregarAntidopings() {
+            const antidopingsSalvos = localStorage.getItem("antidopings");
+            if (antidopingsSalvos) {
+                antidopings = JSON.parse(antidopingsSalvos);
+                atualizarTabela();
+            }
+        }
+
+        // Salvar dados no localStorage
+        function salvarAntidoping() {
+            const atletaNome = document.getElementById("atletaNome").value;
+            const dataTeste = document.getElementById("dataTeste").value;
+            const resultado = document.getElementById("resultado").value;
+
+            // Verifica se os campos foram preenchidos
+            if (!atletaNome || !dataTeste || !resultado) {
+                alert("Todos os campos são obrigatórios!");
+                return;
+            }
+
+            // Cria um novo objeto de antidoping
+            const novoAntidoping = { atletaNome, dataTeste, resultado };
+
+            // Adiciona o novo antidoping na lista
+            antidopings.push(novoAntidoping);
+
+            // Salva no localStorage
+            localStorage.setItem("antidopings", JSON.stringify(antidopings));
+
+            // Atualiza a tabela
+            atualizarTabela();
+
+            // Fecha o modal
+            closeModal();
+        }
+
+        // Atualizar a tabela com os dados
+        function atualizarTabela() {
+            tabela.clear();
+            antidopings.forEach((antidoping, index) => {
+                tabela.row.add([
+                    antidoping.atletaNome,
+                    antidoping.dataTeste,
+                    antidoping.resultado,
+                    `<button onclick="openModal(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded">Editar</button>
+                     <button onclick="deletarAntidoping(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2">Excluir</button>`
+                ]);
+            });
+            tabela.draw();
+        }
+
+        // Exibir o modal
+        function openModal(index = null) {
+            document.getElementById("modal").classList.remove("hidden");
+
+            if (index !== null) {
+                document.getElementById("atletaNome").value = antidopings[index].atletaNome;
+                document.getElementById("dataTeste").value = antidopings[index].dataTeste;
+                document.getElementById("resultado").value = antidopings[index].resultado;
+                document.getElementById("modal").dataset.index = index;
+            } else {
+                document.getElementById("modal").dataset.index = "";
+            }
+        }
+
+        // Fechar o modal
+        function closeModal() {
+            document.getElementById("modal").classList.add("hidden");
+            document.getElementById("atletaNome").value = "";
+            document.getElementById("dataTeste").value = "";
+            document.getElementById("resultado").value = "";
+        }
+
+        // Deletar um teste antidoping
+        function deletarAntidoping(index) {
+            antidopings.splice(index, 1);  // Remove o item
+            localStorage.setItem("antidopings", JSON.stringify(antidopings));  // Atualiza o localStorage
+            atualizarTabela();  // Atualiza a tabela
+        }
+
+        $(document).ready(() => {
+            tabela = $("#tabelaAntidoping").DataTable();
+            carregarAntidopings();  // Carrega os dados do localStorage
+        });
+    </script>
+</body>
+</html>

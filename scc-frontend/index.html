@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            background-image: url('imagem/6125.jpg'); /* Altere o caminho para o seu arquivo de imagem */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover; /* Ajusta a imagem para cobrir toda a tela */
+            background-attachment: fixed;
+            height: 100vh; /* Garantir que a imagem cubra toda a altura da tela */
+            margin: 0; /* Remove margens extras */
+        }
+
+        .login-container {
+            background-color: rgb(255, 255, 255); /* Cor de fundo branca com transparência */
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+
+    <div class="login-container">
+        <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24"> <!-- Logo Centralizada -->
+        <h2 class="text-2xl font-semibold">Login</h2>
+        
+        <div class="mt-4">
+            <label class="block text-sm">E-mail</label>
+            <input id="email" type="email" class="w-full p-2 border rounded mt-1" placeholder="Digite seu e-mail" list="emailsList" />
+            <datalist id="emailsList"></datalist> <!-- Lista de sugestões -->
+        </div>
+
+        <div class="mt-4">
+            <label class="block text-sm">Senha</label>
+            <input id="senha" type="password" class="w-full p-2 border rounded mt-1" placeholder="Digite sua senha" />
+        </div>
+
+        <button onclick="login()" class="mt-4 w-full bg-blue-500 text-white py-2 rounded">Entrar</button>
+
+        <div class="mt-4 text-center">
+            <a href="cadastro.html" class="text-blue-500">Criar uma conta</a>
+        </div>
+    </div>
+
+    <script>
+        // Função para preencher o e-mail salvo e sugerir e-mails previamente usados
+        window.onload = function() {
+            var emailsSalvos = JSON.parse(localStorage.getItem("emails")) || [];
+            var emailInput = document.getElementById("email");
+
+            // Preencher o e-mail se um já foi salvo
+            if (emailsSalvos.length > 0) {
+                emailInput.value = emailsSalvos[emailsSalvos.length - 1]; // Preenche com o último e-mail salvo
+            }
+
+            // Sugerir e-mails salvos
+            var emailList = document.getElementById("emailsList");
+            emailsSalvos.forEach(function(email) {
+                var option = document.createElement("option");
+                option.value = email;
+                emailList.appendChild(option);
+            });
+        }
+
+        // Função de login
+        function login() {
+            var email = document.getElementById("email").value;
+            var senha = document.getElementById("senha").value;
+
+            var emailSalvo = localStorage.getItem("email");
+            var senhaSalva = localStorage.getItem("senha");
+
+            if (email === "" || senha === "") {
+                alert("Por favor, preencha todos os campos!");
+                return;
+            }
+
+            if (email === emailSalvo && senha === senhaSalva) {
+                localStorage.setItem("loggedIn", "true");
+                window.location.href = "competicoes.html"; 
+            } else {
+                alert("Usuário ou senha inválidos!");
+            }
+
+            // Salvar o e-mail digitado para sugestões futuras
+            var emailsSalvos = JSON.parse(localStorage.getItem("emails")) || [];
+            if (!emailsSalvos.includes(email)) {
+                emailsSalvos.push(email); // Adiciona novo e-mail à lista
+                localStorage.setItem("emails", JSON.stringify(emailsSalvos)); // Salva no localStorage
+            }
+
+            // Salvar o e-mail atual para login
+            localStorage.setItem("email", email);
+        }
+    </script>
+</body>
+</html>

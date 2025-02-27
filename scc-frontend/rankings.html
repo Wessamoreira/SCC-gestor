@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC - Rankings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="flex h-screen bg-gray-100">
+
+    <div class="w-64 bg-white shadow-md p-4">
+        <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
+        <ul>
+            <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
+            <li class="mb-2"><a href="competicoes.html" class="block p-2 hover:bg-gray-200 rounded">Competições</a></li>
+            <li class="mb-2"><a href="atletas.html" class="block p-2 hover:bg-gray-200 rounded">Atletas</a></li>
+            <li class="mb-2"><a href="rankings.html" class="block p-2 bg-blue-500 text-white rounded">Rankings</a></li>
+            <li class="mb-2"><a href="antidoping.html" class="block p-2 hover:bg-gray-200 rounded">Antidoping</a></li>
+            <li class="mb-2"><a href="fases.html" class="block p-2 hover:bg-gray-200 rounded">Fases</a></li>
+            <li class="mb-2"><a href="auditoria.html" class="block p-2 hover:bg-gray-200 rounded">Auditoria</a></li>
+            <li class="mt-4"><button onclick="logout()" class="w-full p-2 bg-red-500 text-white rounded">Sair</button></li>
+        </ul>
+    </div>
+
+    <div class="flex-1 p-6">
+        <h1 class="text-2xl font-semibold">Rankings das Competições</h1>
+
+        <select id="competicaoSelect" class="mt-4 p-2 border rounded bg-green-500 text-white">
+            <option value="">Selecione uma Competição</option>
+        </select>
+
+        <select id="atletaSelect" class="mt-4 p-2 border rounded bg-blue-500 text-white">
+            <option value="">Selecione um Atleta</option>
+        </select>
+
+        <!-- Medalhas section with improved layout -->
+        <div class="mt-4 grid grid-cols-3 gap-4">
+            <div class="flex flex-col">
+                <label for="ouro" class="block text-sm font-medium text-gray-700">Medalhas de Ouro</label>
+                <input type="number" id="ouro" class="mt-2 p-2 border rounded text-center" placeholder="0">
+            </div>
+            <div class="flex flex-col">
+                <label for="prata" class="block text-sm font-medium text-gray-700">Medalhas de Prata</label>
+                <input type="number" id="prata" class="mt-2 p-2 border rounded text-center" placeholder="0">
+            </div>
+            <div class="flex flex-col">
+                <label for="bronze" class="block text-sm font-medium text-gray-700">Medalhas de Bronze</label>
+                <input type="number" id="bronze" class="mt-2 p-2 border rounded text-center" placeholder="0">
+            </div>
+        </div>
+
+        <div class="mt-4 flex gap-4">
+            <button onclick="adicionarRanking()" class="w-1/2 bg-green-500 text-white py-2 px-4 rounded">Adicionar ao Ranking</button>
+            <button onclick="mostrarMedalhas()" class="w-1/2 bg-blue-500 text-white py-2 px-4 rounded">Definir Medalhas</button>
+        </div>
+
+        <table id="tabelaRankings" class="mt-4 w-full bg-white shadow-md rounded">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2">Competição</th>
+                    <th class="p-2">Atleta</th>
+                    <th class="p-2">Posição</th>
+                    <th class="p-2">Pontos</th>
+                    <th class="p-2">Medalhas</th>
+                    <th class="p-2">Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        let competicoes = [];
+        let atletas = JSON.parse(localStorage.getItem("atletas")) || [];
+        let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+
+        // Função para carregar as competições e preencher o select
+        function carregarCompeticoes() {
+            const competicoesSalvas = localStorage.getItem("competicoes");
+            if (competicoesSalvas) {
+                competicoes = JSON.parse(competicoesSalvas);
+                preencherSelectCompeticoes();
+            }
+        }
+
+        function preencherSelectCompeticoes() {
+            const select = document.getElementById("competicaoSelect");
+            competicoes.forEach(competicao => {
+                const option = document.createElement("option");
+                option.value = competicao.id;
+                option.textContent = competicao.nome;
+                select.appendChild(option);
+            });
+        }
+
+        function preencherSelectAtletas() {
+            const select = document.getElementById("atletaSelect");
+            atletas.forEach(atleta => {
+                const option = document.createElement("option");
+                option.value = atleta.cpf;
+                option.textContent = atleta.nome;
+                select.appendChild(option);
+            });
+        }
+
+        // Função para salvar o ranking no localStorage
+        function salvarRankings() {
+            localStorage.setItem("rankings", JSON.stringify(rankings));
+            atualizarTabela();
+        }
+
+        // Função para atualizar a tabela de rankings
+        function atualizarTabela() {
+            const tabela = $("#tabelaRankings").DataTable();
+            tabela.clear();
+            rankings.forEach((ranking, index) => {
+                tabela.row.add([
+                    competicoes.find(c => c.id == ranking.competicaoId)?.nome || "Desconhecida",
+                    ranking.atletaNome,
+                    ranking.posicao,
+                    ranking.pontos,
+                    `Ouro: ${ranking.ouro}, Prata: ${ranking.prata}, Bronze: ${ranking.bronze}`,
+                    `<button onclick="deletarRanking(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2">Excluir</button>`
+                ]);
+            });
+            tabela.draw();
+        }
+
+        // Função para adicionar um ranking
+        function adicionarRanking() {
+            const competicaoId = document.getElementById("competicaoSelect").value;
+            const atletaCpf = document.getElementById("atletaSelect").value;
+            const atleta = atletas.find(a => a.cpf === atletaCpf);
+            const posicao = prompt("Posição:");
+            const pontos = prompt("Pontos:");
+            const ouro = document.getElementById("ouro").value;
+            const prata = document.getElementById("prata").value;
+            const bronze = document.getElementById("bronze").value;
+
+            if (atleta && posicao && pontos && ouro !== "" && prata !== "" && bronze !== "") {
+                rankings.push({
+                    atletaNome: atleta.nome,
+                    competicaoId,
+                    posicao,
+                    pontos,
+                    ouro,
+                    prata,
+                    bronze
+                });
+                salvarRankings();
+            }
+        }
+
+        // Função para deletar um ranking
+        function deletarRanking(index) {
+            rankings.splice(index, 1);
+            salvarRankings();
+        }
+
+        // Função de logout
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "index.html";
+        }
+
+        $(document).ready(() => {
+            carregarCompeticoes();
+            preencherSelectAtletas();
+
+            // Atualiza a tabela quando a competição for selecionada
+            $("#competicaoSelect").change(function() {
+                atualizarTabela();
+            });
+        });
+    </script>
+</body>
+</html>

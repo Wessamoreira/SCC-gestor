@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC - Atletas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="flex h-screen bg-gray-100">
+    
+    <div class="w-64 bg-white shadow-md p-4">
+        <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
+        <ul>
+            <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
+            <li class="mb-2"><a href="competicoes.html" class="block p-2 hover:bg-gray-200 rounded">Competições</a></li>
+            <li class="mb-2"><a href="atletas.html" class="block p-2 bg-blue-500 text-white rounded">Atletas</a></li>
+            <li class="mb-2"><a href="rankings.html" class="block p-2 hover:bg-gray-200 rounded">Rankings</a></li>
+            <li class="mb-2"><a href="antidoping.html" class="block p-2 hover:bg-gray-200 rounded">Antidoping</a></li>
+            <li class="mb-2"><a href="fases.html" class="block p-2 hover:bg-gray-200 rounded">Fases</a></li>
+            <li class="mb-2"><a href="auditoria.html" class="block p-2 hover:bg-gray-200 rounded">Auditoria</a></li>
+            <li class="mt-4"><button onclick="logout()" class="w-full p-2 bg-red-500 text-white rounded">Sair</button></li>
+        </ul>
+    </div>
+
+    <div class="flex-1 p-6">
+        <h1 class="text-2xl font-semibold">Gerenciamento de Atletas</h1>
+        <button onclick="openModal()" class="mt-4 bg-green-500 text-white py-2 px-4 rounded">Adicionar Atleta</button>
+        <table id="tabelaAtletas" class="mt-4 w-full bg-white shadow-md rounded">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2">Nome</th>
+                    <th class="p-2">CPF</th>
+                    <th class="p-2">Data de Nascimento</th>
+                    <th class="p-2">País</th>
+                    <th class="p-2">Pontuação</th>
+                    <th class="p-2">Competição</th>
+                    <th class="p-2">Ouro</th>
+                    <th class="p-2">Prata</th>
+                    <th class="p-2">Bronze</th>
+                    <th class="p-2">Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            <h2 class="text-xl font-semibold mb-4">Novo Atleta</h2>
+            <input id="nomeAtleta" type="text" placeholder="Nome" class="w-full p-2 border rounded mb-2">
+            <input id="cpfAtleta" type="text" placeholder="CPF" class="w-full p-2 border rounded mb-2">
+            <input id="dataNascimento" type="date" class="w-full p-2 border rounded mb-2">
+            <input id="paisAtleta" type="text" placeholder="País" class="w-full p-2 border rounded mb-2">
+            <input id="pontuacaoAtleta" type="number" placeholder="Pontuação" class="w-full p-2 border rounded mb-2">
+            <input id="competicaoAtleta" type="text" placeholder="Competição" class="w-full p-2 border rounded mb-2">
+            <input id="ouroAtleta" type="number" placeholder="Medalhas de Ouro" class="w-full p-2 border rounded mb-2">
+            <input id="prataAtleta" type="number" placeholder="Medalhas de Prata" class="w-full p-2 border rounded mb-2">
+            <input id="bronzeAtleta" type="number" placeholder="Medalhas de Bronze" class="w-full p-2 border rounded mb-4">
+            <button onclick="salvarAtleta()" class="bg-blue-500 text-white py-2 px-4 rounded">Salvar</button>
+            <button onclick="closeModal()" class="bg-gray-500 text-white py-2 px-4 rounded ml-2">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+        let atletas = JSON.parse(localStorage.getItem("atletas")) || [];
+
+        function atualizarTabela() {
+            const tabela = document.querySelector("#tabelaAtletas tbody");
+            tabela.innerHTML = "";
+            atletas.forEach((atleta, index) => {
+                tabela.innerHTML += `
+                    <tr>
+                        <td class="p-2">${atleta.nome}</td>
+                        <td class="p-2">${atleta.cpf}</td>
+                        <td class="p-2">${atleta.dataNascimento}</td>
+                        <td class="p-2">${atleta.pais}</td>
+                        <td class="p-2">${atleta.pontuacao}</td>
+                        <td class="p-2">${atleta.competicao}</td>
+                        <td class="p-2">${atleta.ouro}</td>
+                        <td class="p-2">${atleta.prata}</td>
+                        <td class="p-2">${atleta.bronze}</td>
+                        <td class="p-2">
+                            <button onclick="editarAtleta(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded">Editar</button>
+                            <button onclick="deletarAtleta(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2">Excluir</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function openModal() {
+            document.getElementById("modal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("modal").classList.add("hidden");
+        }
+
+        function salvarAtleta() {
+            const nome = document.getElementById("nomeAtleta").value;
+            const cpf = document.getElementById("cpfAtleta").value;
+            const dataNascimento = document.getElementById("dataNascimento").value;
+            const pais = document.getElementById("paisAtleta").value;
+            const pontuacao = document.getElementById("pontuacaoAtleta").value;
+            const competicao = document.getElementById("competicaoAtleta").value;
+            const ouro = document.getElementById("ouroAtleta").value;
+            const prata = document.getElementById("prataAtleta").value;
+            const bronze = document.getElementById("bronzeAtleta").value;
+            
+            atletas.push({ nome, cpf, dataNascimento, pais, pontuacao, competicao, ouro, prata, bronze });
+            localStorage.setItem("atletas", JSON.stringify(atletas));
+            atualizarTabela();
+            closeModal();
+        }
+
+        function deletarAtleta(index) {
+            if (confirm("Deseja excluir este atleta?")) {
+                atletas.splice(index, 1);
+                localStorage.setItem("atletas", JSON.stringify(atletas));
+                atualizarTabela();
+            }
+        }
+
+        function logout() {
+            window.location.href = "index.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", atualizarTabela);
+    </script>
+</body>
+</html>
