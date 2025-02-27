@@ -10,24 +10,28 @@
 </head>
 <body class="flex h-screen bg-gray-100">
 
-    <div class="w-64 bg-white shadow-md p-4">
+    <!-- Menu lateral responsivo -->
+    <button id="menuToggle" class="absolute top-4 left-4 md:hidden bg-blue-500 text-white p-2 rounded">☰</button>
+    
+    <div id="sidebar" class="w-64 bg-white shadow-md p-4 fixed md:relative h-full transition-transform transform -translate-x-full md:translate-x-0">
         <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
         <ul>
             <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
             <li class="mb-2"><a href="competicoes.html" class="block p-2 hover:bg-gray-200 rounded">Competições</a></li>
             <li class="mb-2"><a href="atletas.html" class="block p-2 hover:bg-gray-200 rounded">Atletas</a></li>
             <li class="mb-2"><a href="rankings.html" class="block p-2 hover:bg-gray-200 rounded">Rankings</a></li>
-            <li class="mb-2"><a href="antidoping.html" class="block p-2 bg-blue-500 text-white rounded">Antidoping</a></li>
+            <li class="mb-2"><a href="antidoping.html" class="block p-2 bg-blue-500 text-white rounded hover:bg-blue-600">Antidoping</a></li>
             <li class="mb-2"><a href="fases.html" class="block p-2 hover:bg-gray-200 rounded">Fases</a></li>
             <li class="mb-2"><a href="auditoria.html" class="block p-2 hover:bg-gray-200 rounded">Auditoria</a></li>
             <li class="mt-4"><button onclick="logout()" class="w-full p-2 bg-red-500 text-white rounded">Sair</button></li>
         </ul>
     </div>
 
-    <div class="flex-1 p-6">
+    <!-- Conteúdo principal -->
+    <div class="flex-1 p-6 md:px-12 transition-all">
         <h1 class="text-2xl font-semibold">Controle de Testes Antidoping</h1>
 
-        <button onclick="openModal()" class="mt-4 bg-green-500 text-white py-2 px-4 rounded">Adicionar Teste Antidoping</button>
+        <button onclick="openModal()" class="mt-4 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Adicionar Teste Antidoping</button>
 
         <table id="tabelaAntidoping" class="mt-4 w-full bg-white shadow-md rounded">
             <thead>
@@ -42,6 +46,7 @@
         </table>
     </div>
 
+    <!-- Modal -->
     <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h2 class="text-xl font-semibold mb-4">Novo Teste Antidoping</h2>
@@ -52,8 +57,8 @@
                 <option value="Negativo">Negativo</option>
                 <option value="Positivo">Positivo</option>
             </select>
-            <button onclick="salvarAntidoping()" class="bg-blue-500 text-white py-2 px-4 rounded">Salvar</button>
-            <button onclick="closeModal()" class="bg-gray-500 text-white py-2 px-4 rounded ml-2">Cancelar</button>
+            <button onclick="salvarAntidoping()" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Salvar</button>
+            <button onclick="closeModal()" class="bg-gray-500 text-white py-2 px-4 rounded ml-2 hover:bg-gray-600">Cancelar</button>
         </div>
     </div>
 
@@ -64,7 +69,6 @@
         let tabela;
         let antidopings = [];
 
-        // Carregar dados do localStorage
         function carregarAntidopings() {
             const antidopingsSalvos = localStorage.getItem("antidopings");
             if (antidopingsSalvos) {
@@ -73,35 +77,22 @@
             }
         }
 
-        // Salvar dados no localStorage
         function salvarAntidoping() {
             const atletaNome = document.getElementById("atletaNome").value;
             const dataTeste = document.getElementById("dataTeste").value;
             const resultado = document.getElementById("resultado").value;
 
-            // Verifica se os campos foram preenchidos
             if (!atletaNome || !dataTeste || !resultado) {
                 alert("Todos os campos são obrigatórios!");
                 return;
             }
 
-            // Cria um novo objeto de antidoping
-            const novoAntidoping = { atletaNome, dataTeste, resultado };
-
-            // Adiciona o novo antidoping na lista
-            antidopings.push(novoAntidoping);
-
-            // Salva no localStorage
+            antidopings.push({ atletaNome, dataTeste, resultado });
             localStorage.setItem("antidopings", JSON.stringify(antidopings));
-
-            // Atualiza a tabela
             atualizarTabela();
-
-            // Fecha o modal
             closeModal();
         }
 
-        // Atualizar a tabela com os dados
         function atualizarTabela() {
             tabela.clear();
             antidopings.forEach((antidoping, index) => {
@@ -109,46 +100,40 @@
                     antidoping.atletaNome,
                     antidoping.dataTeste,
                     antidoping.resultado,
-                    `<button onclick="openModal(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded">Editar</button>
-                     <button onclick="deletarAntidoping(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2">Excluir</button>`
+                    `<button onclick="openModal(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600">Editar</button>
+                     <button onclick="deletarAntidoping(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2 hover:bg-red-600">Excluir</button>`
                 ]);
             });
             tabela.draw();
         }
 
-        // Exibir o modal
         function openModal(index = null) {
             document.getElementById("modal").classList.remove("hidden");
-
-            if (index !== null) {
-                document.getElementById("atletaNome").value = antidopings[index].atletaNome;
-                document.getElementById("dataTeste").value = antidopings[index].dataTeste;
-                document.getElementById("resultado").value = antidopings[index].resultado;
-                document.getElementById("modal").dataset.index = index;
-            } else {
-                document.getElementById("modal").dataset.index = "";
-            }
+            document.getElementById("modal").dataset.index = index ?? "";
         }
 
-        // Fechar o modal
         function closeModal() {
             document.getElementById("modal").classList.add("hidden");
-            document.getElementById("atletaNome").value = "";
-            document.getElementById("dataTeste").value = "";
-            document.getElementById("resultado").value = "";
         }
 
-        // Deletar um teste antidoping
         function deletarAntidoping(index) {
-            antidopings.splice(index, 1);  // Remove o item
-            localStorage.setItem("antidopings", JSON.stringify(antidopings));  // Atualiza o localStorage
-            atualizarTabela();  // Atualiza a tabela
+            antidopings.splice(index, 1);
+            localStorage.setItem("antidopings", JSON.stringify(antidopings));
+            atualizarTabela();
         }
 
         $(document).ready(() => {
             tabela = $("#tabelaAntidoping").DataTable();
-            carregarAntidopings();  // Carrega os dados do localStorage
+            carregarAntidopings();
         });
+
+        document.getElementById("menuToggle").addEventListener("click", function () {
+            document.getElementById("sidebar").classList.toggle("-translate-x-full");
+        });
+
+        function logout() {
+            window.location.href = "index.html";
+        }
     </script>
 </body>
 </html>

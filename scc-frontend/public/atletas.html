@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="flex h-screen bg-gray-100">
+<body class="flex flex-col md:flex-row h-screen bg-gray-100">
     
-    <div class="w-64 bg-white shadow-md p-4">
+    <div class="w-full md:w-64 bg-white shadow-md p-4">
         <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
         <ul>
             <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
@@ -24,7 +24,7 @@
         </ul>
     </div>
 
-    <div class="flex-1 p-6">
+    <div class="flex-1 p-6 overflow-auto">
         <h1 class="text-2xl font-semibold">Gerenciamento de Atletas</h1>
         <button onclick="openModal()" class="mt-4 bg-green-500 text-white py-2 px-4 rounded">Adicionar Atleta</button>
         <table id="tabelaAtletas" class="mt-4 w-full bg-white shadow-md rounded">
@@ -89,29 +89,13 @@
             });
         }
 
-        function openModal() {
-            document.getElementById("modal").classList.remove("hidden");
-        }
-
-        function closeModal() {
-            document.getElementById("modal").classList.add("hidden");
-        }
-
-        function salvarAtleta() {
-            const nome = document.getElementById("nomeAtleta").value;
-            const cpf = document.getElementById("cpfAtleta").value;
-            const dataNascimento = document.getElementById("dataNascimento").value;
-            const pais = document.getElementById("paisAtleta").value;
-            const pontuacao = document.getElementById("pontuacaoAtleta").value;
-            const competicao = document.getElementById("competicaoAtleta").value;
-            const ouro = document.getElementById("ouroAtleta").value;
-            const prata = document.getElementById("prataAtleta").value;
-            const bronze = document.getElementById("bronzeAtleta").value;
-            
-            atletas.push({ nome, cpf, dataNascimento, pais, pontuacao, competicao, ouro, prata, bronze });
-            localStorage.setItem("atletas", JSON.stringify(atletas));
-            atualizarTabela();
-            closeModal();
+        function editarAtleta(index) {
+            const novoNome = prompt("Digite o novo nome do atleta:", atletas[index].nome);
+            if (novoNome) {
+                atletas[index].nome = novoNome;
+                localStorage.setItem("atletas", JSON.stringify(atletas));
+                atualizarTabela();
+            }
         }
 
         function deletarAtleta(index) {
@@ -120,6 +104,14 @@
                 localStorage.setItem("atletas", JSON.stringify(atletas));
                 atualizarTabela();
             }
+        }
+
+        function openModal() {
+            document.getElementById("modal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("modal").classList.add("hidden");
         }
 
         function logout() {

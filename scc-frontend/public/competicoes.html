@@ -58,7 +58,7 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script>
         let competicoes = JSON.parse(localStorage.getItem("competicoes")) || [];
-
+    
         function atualizarTabela() {
             const tabela = $("#tabelaCompeticoes").DataTable();
             tabela.clear();
@@ -66,15 +66,16 @@
                 tabela.row.add([
                     competicao.nome,
                     competicao.data,
-                    `<button onclick="editarCompeticao(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded">Editar</button>
+                    `<button onclick="openModal(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded">Editar</button>
                      <button onclick="deletarCompeticao(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2">Excluir</button>`
                 ]);
             });
             tabela.draw();
         }
-
+    
         function openModal(index = null) {
             document.getElementById("modal").classList.remove("hidden");
+    
             if (index !== null) {
                 document.getElementById("nomeCompeticao").value = competicoes[index].nome;
                 document.getElementById("dataCompeticao").value = competicoes[index].data;
@@ -85,7 +86,7 @@
                 document.getElementById("modal").dataset.index = "";
             }
         }
-
+    
         function closeModal() {
             document.getElementById("modal").classList.add("hidden");
             document.getElementById("nomeCompeticao").value = "";
@@ -93,24 +94,25 @@
             document.getElementById("regrasCompeticao").value = "";
             document.getElementById("descricaoCompeticao").value = "";
         }
-
+    
         function salvarCompeticao() {
             const nome = document.getElementById("nomeCompeticao").value;
             const data = document.getElementById("dataCompeticao").value;
             const regras = document.getElementById("regrasCompeticao").value;
             const descricao = document.getElementById("descricaoCompeticao").value;
             const index = document.getElementById("modal").dataset.index;
-            
+    
             if (index !== "") {
                 competicoes[index] = { nome, data, regras, descricao };
             } else {
                 competicoes.push({ nome, data, regras, descricao });
             }
+    
             localStorage.setItem("competicoes", JSON.stringify(competicoes));
             atualizarTabela();
             closeModal();
         }
-
+    
         function deletarCompeticao(index) {
             if (confirm("Deseja excluir esta competição?")) {
                 competicoes.splice(index, 1);
@@ -118,9 +120,11 @@
                 atualizarTabela();
             }
         }
-
+    
         $(document).ready(() => {
-            $("#tabelaCompeticoes").DataTable();
+            $("#tabelaCompeticoes").DataTable({
+                responsive: true
+            });
             atualizarTabela();
         });
     </script>

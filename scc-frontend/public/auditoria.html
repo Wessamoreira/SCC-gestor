@@ -8,43 +8,49 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="flex h-screen bg-gray-100">
+<body class="flex flex-col md:flex-row h-screen bg-gray-100">
 
-    <div class="w-64 bg-white shadow-md p-4">
+    <!-- Sidebar -->
+    <div class="w-full md:w-64 bg-white shadow-md p-4 flex-shrink-0">
         <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
-        <ul>
-            <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
-            <li class="mb-2"><a href="competicoes.html" class="block p-2 hover:bg-gray-200 rounded">Competições</a></li>
-            <li class="mb-2"><a href="atletas.html" class="block p-2 hover:bg-gray-200 rounded">Atletas</a></li>
-            <li class="mb-2"><a href="rankings.html" class="block p-2 hover:bg-gray-200 rounded">Rankings</a></li>
-            <li class="mb-2"><a href="antidoping.html" class="block p-2 hover:bg-gray-200 rounded">Antidoping</a></li>
-            <li class="mb-2"><a href="fases.html" class="block p-2 hover:bg-gray-200 rounded">Fases</a></li>
-            <li class="mb-2"><a href="auditoria.html" class="block p-2 bg-blue-500 text-white rounded">Auditoria</a></li>
+        <ul class="space-y-2">
+            <li><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
+            <li><a href="competicoes.html" class="block p-2 hover:bg-gray-200 rounded">Competições</a></li>
+            <li><a href="atletas.html" class="block p-2 hover:bg-gray-200 rounded">Atletas</a></li>
+            <li><a href="rankings.html" class="block p-2 hover:bg-gray-200 rounded">Rankings</a></li>
+            <li><a href="antidoping.html" class="block p-2 hover:bg-gray-200 rounded">Antidoping</a></li>
+            <li><a href="fases.html" class="block p-2 hover:bg-gray-200 rounded">Fases</a></li>
+            <li><a href="auditoria.html" class="block p-2 bg-blue-500 text-white rounded">Auditoria</a></li>
             <li class="mt-4"><button onclick="logout()" class="w-full p-2 bg-red-500 text-white rounded">Sair</button></li>
         </ul>
     </div>
 
-    <div class="flex-1 p-6">
+    <!-- Conteúdo principal -->
+    <div class="flex-1 p-6 overflow-auto">
         <h1 class="text-2xl font-semibold">Logs de Auditoria</h1>
 
-        <div class="mt-4 mb-4">
-            <input id="descricao" type="text" placeholder="Descrição" class="p-2 border rounded mr-2">
-            <input id="dataAuditoria" type="date" class="p-2 border rounded mr-2">
-            <input id="solicitante" type="text" placeholder="Solicitante" class="p-2 border rounded mr-2">
-            <button onclick="adicionarAuditoria()" class="bg-green-500 text-white py-2 px-4 rounded">Adicionar Auditoria</button>
+        <!-- Formulário Responsivo -->
+        <div class="mt-4 mb-4 grid grid-cols-1 md:grid-cols-4 gap-2">
+            <input id="descricao" type="text" placeholder="Descrição" class="p-2 border rounded w-full">
+            <input id="dataAuditoria" type="date" class="p-2 border rounded w-full">
+            <input id="solicitante" type="text" placeholder="Solicitante" class="p-2 border rounded w-full">
+            <button onclick="adicionarAuditoria()" class="bg-green-500 text-white py-2 px-4 rounded w-full">Adicionar</button>
         </div>
 
-        <table id="tabelaAuditoria" class="mt-4 w-full bg-white shadow-md rounded">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="p-2">Data</th>
-                    <th class="p-2">Solicitante</th>
-                    <th class="p-2">Descrição</th>
-                    <th class="p-2">Ação</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <!-- Tabela Responsiva -->
+        <div class="overflow-x-auto">
+            <table id="tabelaAuditoria" class="mt-4 w-full bg-white shadow-md rounded">
+                <thead>
+                    <tr class="bg-gray-200 text-sm md:text-base">
+                        <th class="p-2">Data</th>
+                        <th class="p-2">Solicitante</th>
+                        <th class="p-2">Descrição</th>
+                        <th class="p-2">Ação</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
