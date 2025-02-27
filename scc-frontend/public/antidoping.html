@@ -39,6 +39,8 @@
                     <th class="p-2">Atleta</th>
                     <th class="p-2">Data do Teste</th>
                     <th class="p-2">Resultado</th>
+                    <th class="p-2">CPF</th>
+                    <th class="p-2">País</th>
                     <th class="p-2">Ações</th>
                 </tr>
             </thead>
@@ -46,21 +48,24 @@
         </table>
     </div>
 
-    <!-- Modal -->
-    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white p-6 rounded shadow-md w-96">
-            <h2 class="text-xl font-semibold mb-4">Novo Teste Antidoping</h2>
-            <input id="atletaNome" type="text" placeholder="Nome do Atleta" class="w-full p-2 border rounded mb-2">
-            <input id="dataTeste" type="date" class="w-full p-2 border rounded mb-2">
-            <select id="resultado" class="w-full p-2 border rounded mb-4">
-                <option value="">Selecione Resultado</option>
-                <option value="Negativo">Negativo</option>
-                <option value="Positivo">Positivo</option>
-            </select>
-            <button onclick="salvarAntidoping()" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Salvar</button>
-            <button onclick="closeModal()" class="bg-gray-500 text-white py-2 px-4 rounded ml-2 hover:bg-gray-600">Cancelar</button>
-        </div>
+   <!-- Modal -->
+<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded shadow-md w-96">
+        <h2 class="text-xl font-semibold mb-4">Visualizar / Adicionar Teste Antidoping</h2>
+        <input id="atletaNome" type="text" placeholder="Nome do Atleta" class="w-full p-2 border rounded mb-2">
+        <input id="dataTeste" type="date" class="w-full p-2 border rounded mb-2">
+        <select id="resultado" class="w-full p-2 border rounded mb-4">
+            <option value="Negativo">Negativo</option>
+            <option value="Positivo">Positivo</option>
+        </select>
+        
+        <input id="cpfAtleta" type="text" placeholder="CPF do Atleta" class="w-full p-2 border rounded mb-2">
+        <input id="paisAtleta" type="text" placeholder="País do Atleta" class="w-full p-2 border rounded mb-4">
+
+        <button onclick="salvarAntidoping()" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Salvar</button>
+        <button onclick="closeModal()" class="bg-gray-500 text-white py-2 px-4 rounded ml-2 hover:bg-gray-600">Fechar</button>
     </div>
+</div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -81,13 +86,15 @@
             const atletaNome = document.getElementById("atletaNome").value;
             const dataTeste = document.getElementById("dataTeste").value;
             const resultado = document.getElementById("resultado").value;
+            const cpfAtleta = document.getElementById("cpfAtleta").value;
+            const paisAtleta = document.getElementById("paisAtleta").value;
 
-            if (!atletaNome || !dataTeste || !resultado) {
+            if (!atletaNome || !dataTeste || !resultado || !cpfAtleta || !paisAtleta) {
                 alert("Todos os campos são obrigatórios!");
                 return;
             }
 
-            antidopings.push({ atletaNome, dataTeste, resultado });
+            antidopings.push({ atletaNome, dataTeste, resultado, cpfAtleta, paisAtleta });
             localStorage.setItem("antidopings", JSON.stringify(antidopings));
             atualizarTabela();
             closeModal();
@@ -100,8 +107,12 @@
                     antidoping.atletaNome,
                     antidoping.dataTeste,
                     antidoping.resultado,
-                    `<button onclick="openModal(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600">Editar</button>
-                     <button onclick="deletarAntidoping(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2 hover:bg-red-600">Excluir</button>`
+                    antidoping.cpfAtleta,
+                    antidoping.paisAtleta,
+                    `<div class="flex gap-2">
+                        <button onclick="openModal(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600">Visualizar</button>
+                        <button onclick="deletarAntidoping(${index})" class="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600">Excluir</button>
+                    </div>`
                 ]);
             });
             tabela.draw();
@@ -109,7 +120,39 @@
 
         function openModal(index = null) {
             document.getElementById("modal").classList.remove("hidden");
-            document.getElementById("modal").dataset.index = index ?? "";
+
+            // Se o índice for fornecido, significa que estamos editando um antidoping
+            if (index !== null) {
+                const antidoping = antidopings[index];
+
+                // Preencher os campos do modal com dados do antidoping
+                document.getElementById("atletaNome").value = antidoping.atletaNome;
+                document.getElementById("dataTeste").value = antidoping.dataTeste;
+                document.getElementById("resultado").value = antidoping.resultado;
+                document.getElementById("cpfAtleta").value = antidoping.cpfAtleta;
+                document.getElementById("paisAtleta").value = antidoping.paisAtleta;
+
+                // Desabilitar os campos para visualização
+                document.getElementById("atletaNome").disabled = true;
+                document.getElementById("dataTeste").disabled = true;
+                document.getElementById("resultado").disabled = true;
+                document.getElementById("cpfAtleta").disabled = true;
+                document.getElementById("paisAtleta").disabled = true;
+            } else {
+                // Se não houver índice, estamos adicionando um novo antidoping, então os campos devem ser habilitados
+                document.getElementById("atletaNome").disabled = false;
+                document.getElementById("dataTeste").disabled = false;
+                document.getElementById("resultado").disabled = false;
+                document.getElementById("cpfAtleta").disabled = false;
+                document.getElementById("paisAtleta").disabled = false;
+
+                // Limpar os campos
+                document.getElementById("atletaNome").value = '';
+                document.getElementById("dataTeste").value = '';
+                document.getElementById("resultado").value = 'Negativo';
+                document.getElementById("cpfAtleta").value = '';
+                document.getElementById("paisAtleta").value = '';
+            }
         }
 
         function closeModal() {
@@ -123,7 +166,11 @@
         }
 
         $(document).ready(() => {
-            tabela = $("#tabelaAntidoping").DataTable();
+            tabela = $("#tabelaAntidoping").DataTable({
+                "columnDefs": [
+                    { "targets": [5], "orderable": false }  // Desabilitar a ordenação na coluna de ações
+                ]
+            });
             carregarAntidopings();
         });
 

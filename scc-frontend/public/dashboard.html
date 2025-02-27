@@ -70,14 +70,16 @@
 
     <script>
         function carregarDashboard() {
-            const competicoes = JSON.parse(localStorage.getItem("competicoes")) || [];
-            const atletas = JSON.parse(localStorage.getItem("atletas")) || [];
-            const antidoping = JSON.parse(localStorage.getItem("antidoping")) || [];
+    const competicoes = JSON.parse(localStorage.getItem("competicoes")) || [];
+    const atletas = JSON.parse(localStorage.getItem("atletas")) || [];
+    
+    // Corrigir a chave para antidoping (se a chave estiver errada no seu localStorage, altere para o valor correto)
+    const antidoping = JSON.parse(localStorage.getItem("antidopings")) || [];  // **Corrigido aqui**
 
-            document.getElementById("totalCompeticoes").innerText = competicoes.length;
-            document.getElementById("totalAtletas").innerText = atletas.length;
-            document.getElementById("totalAntidoping").innerText = antidoping.length;
-        }
+    document.getElementById("totalCompeticoes").innerText = competicoes.length;
+    document.getElementById("totalAtletas").innerText = atletas.length;
+    document.getElementById("totalAntidoping").innerText = antidoping.length;
+}
 
         function logout() {
             window.location.href = "index.html";

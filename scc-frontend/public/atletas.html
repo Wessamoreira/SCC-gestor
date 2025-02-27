@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCC - Atletas</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="flex flex-col md:flex-row h-screen bg-gray-100">
+<body class="flex h-screen bg-gray-100">
     
-    <div class="w-full md:w-64 bg-white shadow-md p-4">
+    <div class="w-64 bg-white shadow-md p-4">
         <img src="imagem/Logo olimpiada.png" alt="Logo SCC" class="mx-auto mb-4 w-24 h-24">
         <ul>
             <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
@@ -24,7 +23,7 @@
         </ul>
     </div>
 
-    <div class="flex-1 p-6 overflow-auto">
+    <div class="flex-1 p-6">
         <h1 class="text-2xl font-semibold">Gerenciamento de Atletas</h1>
         <button onclick="openModal()" class="mt-4 bg-green-500 text-white py-2 px-4 rounded">Adicionar Atleta</button>
         <table id="tabelaAtletas" class="mt-4 w-full bg-white shadow-md rounded">
@@ -35,10 +34,6 @@
                     <th class="p-2">Data de Nascimento</th>
                     <th class="p-2">País</th>
                     <th class="p-2">Pontuação</th>
-                    <th class="p-2">Competição</th>
-                    <th class="p-2">Ouro</th>
-                    <th class="p-2">Prata</th>
-                    <th class="p-2">Bronze</th>
                     <th class="p-2">Ações</th>
                 </tr>
             </thead>
@@ -53,11 +48,7 @@
             <input id="cpfAtleta" type="text" placeholder="CPF" class="w-full p-2 border rounded mb-2">
             <input id="dataNascimento" type="date" class="w-full p-2 border rounded mb-2">
             <input id="paisAtleta" type="text" placeholder="País" class="w-full p-2 border rounded mb-2">
-            <input id="pontuacaoAtleta" type="number" placeholder="Pontuação" class="w-full p-2 border rounded mb-2">
-            <input id="competicaoAtleta" type="text" placeholder="Competição" class="w-full p-2 border rounded mb-2">
-            <input id="ouroAtleta" type="number" placeholder="Medalhas de Ouro" class="w-full p-2 border rounded mb-2">
-            <input id="prataAtleta" type="number" placeholder="Medalhas de Prata" class="w-full p-2 border rounded mb-2">
-            <input id="bronzeAtleta" type="number" placeholder="Medalhas de Bronze" class="w-full p-2 border rounded mb-4">
+            <input id="pontuacaoAtleta" type="number" placeholder="Pontuação" class="w-full p-2 border rounded mb-4">
             <button onclick="salvarAtleta()" class="bg-blue-500 text-white py-2 px-4 rounded">Salvar</button>
             <button onclick="closeModal()" class="bg-gray-500 text-white py-2 px-4 rounded ml-2">Cancelar</button>
         </div>
@@ -77,25 +68,25 @@
                         <td class="p-2">${atleta.dataNascimento}</td>
                         <td class="p-2">${atleta.pais}</td>
                         <td class="p-2">${atleta.pontuacao}</td>
-                        <td class="p-2">${atleta.competicao}</td>
-                        <td class="p-2">${atleta.ouro}</td>
-                        <td class="p-2">${atleta.prata}</td>
-                        <td class="p-2">${atleta.bronze}</td>
                         <td class="p-2">
-                            <button onclick="editarAtleta(${index})" class="bg-yellow-500 text-white py-1 px-2 rounded">Editar</button>
-                            <button onclick="deletarAtleta(${index})" class="bg-red-500 text-white py-1 px-2 rounded ml-2">Excluir</button>
+                            <button onclick="deletarAtleta(${index})" class="bg-red-500 text-white py-1 px-2 rounded">Excluir</button>
                         </td>
                     </tr>`;
             });
         }
 
-        function editarAtleta(index) {
-            const novoNome = prompt("Digite o novo nome do atleta:", atletas[index].nome);
-            if (novoNome) {
-                atletas[index].nome = novoNome;
-                localStorage.setItem("atletas", JSON.stringify(atletas));
-                atualizarTabela();
-            }
+        function salvarAtleta() {
+            const novoAtleta = {
+                nome: document.getElementById("nomeAtleta").value,
+                cpf: document.getElementById("cpfAtleta").value,
+                dataNascimento: document.getElementById("dataNascimento").value,
+                pais: document.getElementById("paisAtleta").value,
+                pontuacao: document.getElementById("pontuacaoAtleta").value
+            };
+            atletas.push(novoAtleta);
+            localStorage.setItem("atletas", JSON.stringify(atletas));
+            closeModal();
+            atualizarTabela();
         }
 
         function deletarAtleta(index) {
